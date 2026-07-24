@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { employeesApi, departmentsApi, servicesApi } from '../api';
 import Modal from '../components/Modal';
 import { Badge, Loading, ConfirmModal } from '../components/UI';
@@ -103,7 +104,11 @@ export default function EmployeesPage() {
               ) : employees.map(e => (
                 <tr key={e.id}>
                   <td><strong>{e.emp_code}</strong></td>
-                  <td style={{ whiteSpace: 'nowrap' }}><strong>{e.last_name} {e.first_name}</strong></td>
+                  <td style={{ whiteSpace: 'nowrap' }}>
+                    <Link to={`/employees/${e.id}`} style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 700 }} className="hover-underline">
+                      {e.last_name} {e.first_name}
+                    </Link>
+                  </td>
                   <td style={{ fontSize: '12px' }}>{e.email}</td>
                   <td>{e.designation}</td>
                   <td>{e.department?.name || '-'}</td>

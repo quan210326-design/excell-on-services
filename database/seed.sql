@@ -108,7 +108,7 @@ INSERT INTO call_logs (client_id, employee_id, call_type, call_datetime, duratio
 (4, 4, 'telemarketing', '2024-12-08 09:30:00', 30, 'Cloud services demo', 'completed');
 
 -- ============================================================
--- 9. USERS (password là "Admin@123" đã hash bằng bcrypt)
+-- 10. USERS (password là "Admin@123" đã hash bằng bcrypt)
 -- ============================================================
 INSERT INTO users (username, password_hash, email, full_name, role, employee_id) VALUES
 ('admin', '$2a$12$iVqh1cdc411By41qWhj5SeIv9kavowtQPAJdwvSbSukmKpoMO38zO', 'admin@ecs.com', 'System Administrator', 'admin', NULL),

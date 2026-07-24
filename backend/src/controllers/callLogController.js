@@ -45,6 +45,21 @@ const create = async (req, res) => {
         return res.status(403).json({ message: 'Tài khoản không được liên kết với nhân viên nào' });
       }
     }
+
+    if (!req.body.employee_id) {
+      const userRecord = await User.findByPk(req.user.id);
+      if (userRecord && userRecord.employee_id) {
+        req.body.employee_id = userRecord.employee_id;
+      } else {
+        const fallbackEmp = await Employee.findOne();
+        if (fallbackEmp) {
+          req.body.employee_id = fallbackEmp.id;
+        } else {
+          return res.status(400).json({ message: 'Không tìm thấy nhân viên nào trong hệ thống để gán cuộc gọi' });
+        }
+      }
+    }
+
     const log = await CallLog.create(req.body);
     res.status(201).json({ message: 'Tạo call log thành công', log });
   } catch (err) {

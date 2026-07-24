@@ -3,7 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const { testConnection } = require('./src/config/database');
+const { sequelize, testConnection } = require('./src/config/database');
 require('./src/models'); // Khởi tạo models và associations
 
 const app = express();

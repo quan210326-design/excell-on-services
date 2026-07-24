@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User, Employee } = require('../models');
+const { User, Employee, Department, Service } = require('../models');
 
 // POST /api/auth/login
 const login = async (req, res) => {
@@ -36,7 +36,8 @@ const login = async (req, res) => {
       token,
       user: {
         id: user.id, username: user.username,
-        full_name: user.full_name, role: user.role, email: user.email
+        full_name: user.full_name, role: user.role, email: user.email,
+        employee_id: user.employee_id
       }
     });
   } catch (err) {
@@ -49,7 +50,14 @@ const getMe = async (req, res) => {
   try {
     const user = await User.findByPk(req.user.id, {
       attributes: { exclude: ['password_hash'] },
-      include: [{ model: Employee, as: 'employee' }]
+      include: [{
+        model: Employee,
+        as: 'employee',
+        include: [
+          { model: Department, as: 'department', attributes: ['id', 'name', 'code'] },
+          { model: Service, as: 'service', attributes: ['id', 'name', 'type'] }
+        ]
+      }]
     });
     res.json(user);
   } catch (err) {

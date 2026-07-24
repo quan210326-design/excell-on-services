@@ -36,6 +36,9 @@ const getAll = async (req, res) => {
     });
     res.json(procedures);
   } catch (err) {
+    if (err.name === 'SequelizeDatabaseError' && (err.parent?.code === 'ER_NO_SUCH_TABLE' || err.message.includes("doesn't exist"))) {
+      return res.json([]);
+    }
     res.status(500).json({ message: 'Lỗi server', error: err.message });
   }
 };

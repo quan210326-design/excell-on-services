@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { clientsApi } from '../api';
 import Modal from '../components/Modal';
 import { Badge, Loading, ConfirmModal } from '../components/UI';
-import { Search, Plus, Edit2, Trash2, Eye } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Eye, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { useCall } from '../context/CallContext';
 
 const EMPTY_FORM = {
   client_code: '', company_name: '', contact_person: '', email: '',
@@ -15,6 +16,7 @@ const EMPTY_FORM = {
 export default function ClientsPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { startCall } = useCall();
   const isStaff = user?.role === 'staff';
 
   const [clients, setClients] = useState([]);
@@ -111,12 +113,12 @@ export default function ClientsPage() {
               <tr>
                 <th>Mã KH</th><th>Tên Công Ty</th><th>Người Liên Hệ</th>
                 <th>Email</th><th>Thành Phố</th><th>Ngành</th>
-                <th>Dịch Vụ</th><th>Trạng Thái</th>{!isStaff && <th>Hành Động</th>}
+                <th>Dịch Vụ</th><th>Trạng Thái</th><th>Hành Động</th>
               </tr>
             </thead>
             <tbody>
               {clients.length === 0 ? (
-                <tr><td colSpan={isStaff ? 8 : 9} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>Không có dữ liệu</td></tr>
+                <tr><td colSpan={9} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>Không có dữ liệu</td></tr>
               ) : clients.map(c => (
                 <tr key={c.id}>
                   <td><strong>{c.client_code}</strong></td>
@@ -133,21 +135,28 @@ export default function ClientsPage() {
                       : <span className="text-muted">-</span>}
                   </td>
                   <td><Badge status={c.status} /></td>
-                  {!isStaff && (
-                    <td>
-                      <div className="action-btns">
-                        <button id={`view-client-${c.id}`} className="btn btn-sm btn-secondary" onClick={() => navigate(`/clients/${c.id}`)} title="Xem Chi Tiết">
-                          <Eye size={13} />
+                  <td>
+                    <div className="action-btns">
+                      {c.phone && (
+                        <button id={`call-client-${c.id}`} className="btn btn-sm btn-success" onClick={() => startCall(c)} title="Gọi ảo">
+                          <Phone size={13} />
                         </button>
-                        <button id={`edit-client-${c.id}`} className="btn btn-sm btn-secondary" onClick={() => openEdit(c)} title="Sửa">
-                          <Edit2 size={13} />
-                        </button>
-                        <button id={`delete-client-${c.id}`} className="btn btn-sm btn-danger" onClick={() => setConfirmId(c.id)} title="Xóa">
-                          <Trash2 size={13} />
-                        </button>
-                      </div>
-                    </td>
-                  )}
+                      )}
+                      <button id={`view-client-${c.id}`} className="btn btn-sm btn-secondary" onClick={() => navigate(`/clients/${c.id}`)} title="Xem Chi Tiết">
+                        <Eye size={13} />
+                      </button>
+                      {!isStaff && (
+                        <>
+                          <button id={`edit-client-${c.id}`} className="btn btn-sm btn-secondary" onClick={() => openEdit(c)} title="Sửa">
+                            <Edit2 size={13} />
+                          </button>
+                          <button id={`delete-client-${c.id}`} className="btn btn-sm btn-danger" onClick={() => setConfirmId(c.id)} title="Xóa">
+                            <Trash2 size={13} />
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  </td>
                 </tr>
               ))}
             </tbody>

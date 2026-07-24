@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Employee, Department, Service } = require('../models');
+const { Employee, Department, Service, User } = require('../models');
 
 // GET /api/employees?dept_id=&service_id=&status=&search=
 const getAll = async (req, res) => {
@@ -38,7 +38,8 @@ const getById = async (req, res) => {
     const emp = await Employee.findByPk(req.params.id, {
       include: [
         { model: Department, as: 'department' },
-        { model: Service, as: 'service' }
+        { model: Service, as: 'service' },
+        { model: User, as: 'user', attributes: ['id', 'username', 'role', 'is_active', 'last_login'] }
       ]
     });
     if (!emp) return res.status(404).json({ message: 'Không tìm thấy nhân viên' });

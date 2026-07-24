@@ -2,12 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { clientsApi, clientServicesApi, paymentsApi, clientProductsApi, callLogsApi, clientProceduresApi } from '../api';
 import { Badge, Loading, TabNav } from '../components/UI';
-import { ArrowLeft, Building2, Mail, Phone, MapPin, Globe, Briefcase, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Mail, Phone, MapPin, Globe, Briefcase, AlertTriangle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useCall } from '../context/CallContext';
+import { useAuth } from '../context/AuthContext';
 
 export default function ClientDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { startCall } = useCall();
+  const { user } = useAuth();
+  const isAdminOrManager = user?.role === 'admin' || user?.role === 'manager';
+
   const [activeTab, setActiveTab] = useState('overview');
   const [client, setClient] = useState(null);
   const [services, setServices] = useState([]);
@@ -17,31 +23,63 @@ export default function ClientDetailPage() {
   const [procedures, setProcedures] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [isEditingNotes, setIsEditingNotes] = useState(false);
+  const [notesText, setNotesText] = useState('');
+  const [savingNotes, setSavingNotes] = useState(false);
+
+  const handleSaveNotes = async () => {
+    setSavingNotes(true);
+    try {
+      await clientsApi.update(id, { ...client, notes: notesText });
+      toast.success('Cập nhật ghi chú thành công');
+      setClient({ ...client, notes: notesText });
+      setIsEditingNotes(false);
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Không thể lưu ghi chú');
+    } finally {
+      setSavingNotes(false);
+    }
+  };
+
+  const fetchAll = async () => {
+    try {
+      const [cRes, csRes, pRes, prRes, clRes, cpRes] = await Promise.all([
+        clientsApi.getById(id),
+        clientServicesApi.getAll({ client_id: id }).catch(err => { console.error(err); return { data: [] }; }),
+        paymentsApi.getAll({ client_id: id }).catch(err => { console.error(err); return { data: [] }; }),
+        clientProductsApi.getAll({ client_id: id }).catch(err => { console.error(err); return { data: [] }; }),
+        callLogsApi.getAll({ client_id: id }).catch(err => { console.error(err); return { data: [] }; }),
+        clientProceduresApi.getAll({ client_id: id }).catch(err => { console.error(err); return { data: [] }; })
+      ]);
+      setClient(cRes.data);
+      setServices(csRes.data);
+      setPayments(pRes.data);
+      setProducts(prRes.data);
+      setCallLogs(clRes.data);
+      setProcedures(cpRes.data);
+    } catch (err) {
+      console.error(err);
+      toast.error('Lỗi tải dữ liệu client');
+    }
+  };
+
   useEffect(() => {
-    const fetchAll = async () => {
+    const initFetch = async () => {
       setLoading(true);
-      try {
-        const [cRes, csRes, pRes, prRes, clRes, cpRes] = await Promise.all([
-          clientsApi.getById(id),
-          clientServicesApi.getAll({ client_id: id }),
-          paymentsApi.getAll({ client_id: id }),
-          clientProductsApi.getAll({ client_id: id }),
-          callLogsApi.getAll({ client_id: id }),
-          clientProceduresApi.getAll({ client_id: id })
-        ]);
-        setClient(cRes.data);
-        setServices(csRes.data);
-        setPayments(pRes.data);
-        setProducts(prRes.data);
-        setCallLogs(clRes.data);
-        setProcedures(cpRes.data);
-      } catch {
-        toast.error('Lỗi tải dữ liệu client');
-      } finally {
-        setLoading(false);
+      await fetchAll();
+      setLoading(false);
+    };
+    initFetch();
+  }, [id]);
+
+  useEffect(() => {
+    const handleCallLogSaved = (e) => {
+      if (Number(e.detail?.clientId) === Number(id)) {
+        fetchAll();
       }
     };
-    fetchAll();
+    window.addEventListener('call-log-saved', handleCallLogSaved);
+    return () => window.removeEventListener('call-log-saved', handleCallLogSaved);
   }, [id]);
 
 
@@ -90,7 +128,18 @@ export default function ClientDetailPage() {
             </div>
             <div className="detail-meta-item">
               <label><Phone size={11} style={{ display: 'inline', marginRight: 3 }} />Điện Thoại</label>
-              <span>{client.phone || '-'}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <span>{client.phone || '-'}</span>
+                {client.phone && (
+                  <button 
+                    className="btn btn-sm btn-success" 
+                    style={{ padding: '2px 8px', fontSize: '11px', borderRadius: '4px', display: 'inline-flex', alignItems: 'center', gap: '4px', height: '22px' }}
+                    onClick={() => startCall(client)}
+                  >
+                    <Phone size={10} /> Gọi ảo
+                  </button>
+                )}
+              </div>
             </div>
             <div className="detail-meta-item">
               <label><MapPin size={11} style={{ display: 'inline', marginRight: 3 }} />Thành Phố</label>
@@ -172,10 +221,53 @@ export default function ClientDetailPage() {
             ))}
           </div>
           <div className="card">
-            <h3 style={{ marginBottom: 16, fontSize: 14, fontWeight: 600 }}>📝 Ghi Chú</h3>
-            <p style={{ color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.8 }}>
-              {client.notes || 'Không có ghi chú.'}
-            </p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 600, margin: 0 }}>📝 Ghi Chú</h3>
+              {isAdminOrManager && !isEditingNotes && (
+                <button 
+                  className="btn btn-sm btn-secondary" 
+                  style={{ padding: '2px 8px', fontSize: 11 }}
+                  onClick={() => {
+                    setNotesText(client.notes || '');
+                    setIsEditingNotes(true);
+                  }}
+                >
+                  Sửa ghi chú
+                </button>
+              )}
+            </div>
+            {isEditingNotes ? (
+              <div>
+                <textarea 
+                  className="form-control" 
+                  rows={4} 
+                  value={notesText} 
+                  onChange={e => setNotesText(e.target.value)}
+                  style={{ width: '100%', marginBottom: 8, fontSize: 13, background: 'var(--bg)', color: 'var(--text)', border: '1px solid var(--border)' }}
+                  placeholder="Nhập ghi chú khách hàng..."
+                />
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                  <button 
+                    className="btn btn-sm btn-secondary" 
+                    onClick={() => setIsEditingNotes(false)}
+                    disabled={savingNotes}
+                  >
+                    Hủy
+                  </button>
+                  <button 
+                    className="btn btn-sm btn-primary" 
+                    onClick={handleSaveNotes}
+                    disabled={savingNotes}
+                  >
+                    {savingNotes ? 'Đang lưu...' : 'Lưu'}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p style={{ color: 'var(--text-secondary)', fontSize: 13, lineHeight: 1.8, whiteSpace: 'pre-wrap' }}>
+                {client.notes || 'Không có ghi chú.'}
+              </p>
+            )}
             <h3 style={{ margin: '20px 0 12px', fontSize: 14, fontWeight: 600 }}>📈 Tóm Tắt Hoạt Động</h3>
             {[
               { label: 'Tổng đăng ký dịch vụ', value: services.length },

@@ -12,10 +12,10 @@ const COLORS = ['#2563eb', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
-      <div style={{ 
-        background: '#111827', 
-        border: '1px solid rgba(255, 255, 255, 0.15)', 
-        padding: '10px 14px', 
+      <div style={{
+        background: '#111827',
+        border: '1px solid rgba(255, 255, 255, 0.15)',
+        padding: '10px 14px',
         borderRadius: '8px',
         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.5)'
       }}>
@@ -89,13 +89,13 @@ export default function DashboardPage() {
             <AreaChart data={revenueData}>
               <defs>
                 <linearGradient id="rev" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
-                  <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+                  <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#2563eb" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
               <XAxis dataKey="month" tick={{ fill: '#64748b', fontSize: 11 }} />
-              <YAxis tick={{ fill: '#64748b', fontSize: 11 }} tickFormatter={v => `$${(v/1000).toFixed(0)}k`} />
+              <YAxis tick={{ fill: '#64748b', fontSize: 11 }} tickFormatter={v => `$${(v / 1000).toFixed(0)}k`} />
               <Tooltip content={<CustomTooltip />} />
               <Area type="monotone" dataKey="revenue" stroke="#2563eb" fill="url(#rev)" strokeWidth={2} />
             </AreaChart>
@@ -104,7 +104,7 @@ export default function DashboardPage() {
 
         {/* Payment Status */}
         <div className="card">
-          <h3 style={{ marginBottom: '20px', fontSize: '15px', fontWeight: 600 }}>💳 Trạng Thế Thanh Toán</h3>
+          <h3 style={{ marginBottom: '20px', fontSize: '15px', fontWeight: 600 }}>💳 Trạng Thái Thanh Toán</h3>
           <ResponsiveContainer width="100%" height={220}>
             <BarChart data={paymentData} barSize={36}>
               <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />

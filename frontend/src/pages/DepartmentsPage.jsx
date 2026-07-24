@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { departmentsApi } from '../api';
 import Modal from '../components/Modal';
 import { Badge, Loading, ConfirmModal } from '../components/UI';
@@ -64,7 +65,11 @@ export default function DepartmentsPage() {
               {depts.map(d => (
                 <tr key={d.id}>
                   <td><strong>{d.code}</strong></td>
-                  <td><strong>{d.name}</strong></td>
+                  <td>
+                    <Link to={`/departments/${d.id}`} style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 700 }} className="hover-underline">
+                      {d.name}
+                    </Link>
+                  </td>
                   <td>{d.manager_name || '-'}</td>
                   <td style={{ maxWidth: '350px', fontSize: '12px' }}>{d.description || '-'}</td>
                   <td><Badge status={d.is_active ? 'active' : 'inactive'} /></td>

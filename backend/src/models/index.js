@@ -48,6 +48,7 @@ Employee.hasMany(CallLog, { foreignKey: 'employee_id', as: 'callLogs' });
 
 // ── User relationships ──────────────────────────────
 User.belongsTo(Employee, { foreignKey: 'employee_id', as: 'employee' });
+Employee.hasOne(User, { foreignKey: 'employee_id', as: 'user' });
 
 module.exports = {
   Service, Department, Employee, Client,

@@ -4,7 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CallProvider, useCall } from './context/CallContext';
 import Sidebar from './components/Sidebar';
-import CallWidget from './components/CallWidget';
+import VirtualCallWidget from './components/VirtualCallWidget';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import ServicesPage from './pages/ServicesPage';
@@ -19,15 +19,12 @@ import PaymentsPage from './pages/PaymentsPage';
 import CallLogsPage from './pages/CallLogsPage';
 import ReportsPage from './pages/ReportsPage';
 import ProfilePage from './pages/ProfilePage';
+import EmployeeDetailPage from './pages/EmployeeDetailPage';
+import DepartmentDetailPage from './pages/DepartmentDetailPage';
 
 
 function ProtectedLayout({ children }) {
   const { user, loading } = useAuth();
-  const { initDevice } = useCall();
-
-  useEffect(() => {
-    if (user) initDevice();
-  }, [user]);
 
   if (loading) return <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', fontSize: '18px' }}>Đang tải...</div>;
   if (!user) return <Navigate to="/login" replace />;
@@ -37,7 +34,7 @@ function ProtectedLayout({ children }) {
       <div className="main-content" style={{ marginLeft: '260px' }}>
         <div className="page-body">{children}</div>
       </div>
-      <CallWidget />
+      <VirtualCallWidget />
     </div>
   );
 }
@@ -64,7 +61,9 @@ function AppRoutes() {
       <Route path="/" element={<ProtectedLayout><DashboardPage /></ProtectedLayout>} />
       <Route path="/services" element={<ProtectedLayout><RoleProtectedRoute allowedRoles={['admin', 'manager']}><ServicesPage /></RoleProtectedRoute></ProtectedLayout>} />
       <Route path="/departments" element={<ProtectedLayout><RoleProtectedRoute allowedRoles={['admin', 'manager']}><DepartmentsPage /></RoleProtectedRoute></ProtectedLayout>} />
+      <Route path="/departments/:id" element={<ProtectedLayout><RoleProtectedRoute allowedRoles={['admin', 'manager']}><DepartmentDetailPage /></RoleProtectedRoute></ProtectedLayout>} />
       <Route path="/employees" element={<ProtectedLayout><RoleProtectedRoute allowedRoles={['admin', 'manager']}><EmployeesPage /></RoleProtectedRoute></ProtectedLayout>} />
+      <Route path="/employees/:id" element={<ProtectedLayout><RoleProtectedRoute allowedRoles={['admin', 'manager']}><EmployeeDetailPage /></RoleProtectedRoute></ProtectedLayout>} />
       <Route path="/clients" element={<ProtectedLayout><RoleProtectedRoute allowedRoles={['admin', 'manager', 'staff']}><ClientsPage /></RoleProtectedRoute></ProtectedLayout>} />
       <Route path="/clients/:id" element={<ProtectedLayout><RoleProtectedRoute allowedRoles={['admin', 'manager', 'staff']}><ClientDetailPage /></RoleProtectedRoute></ProtectedLayout>} />
       <Route path="/client-services" element={<ProtectedLayout><RoleProtectedRoute allowedRoles={['admin', 'manager', 'staff']}><ClientServicesPage /></RoleProtectedRoute></ProtectedLayout>} />
