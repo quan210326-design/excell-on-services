@@ -108,7 +108,7 @@ INSERT INTO call_logs (client_id, employee_id, call_type, call_datetime, duratio
 (4, 4, 'telemarketing', '2024-12-08 09:30:00', 30, 'Cloud services demo', 'completed');
 
 -- ============================================================
--- 10. USERS (password là "Admin@123" đã hash bằng bcrypt)
+-- 9. USERS (password là "Admin@123" đã hash bằng bcrypt)
 -- ============================================================
 INSERT INTO users (username, password_hash, email, full_name, role, employee_id) VALUES
 ('admin', '$2a$12$iVqh1cdc411By41qWhj5SeIv9kavowtQPAJdwvSbSukmKpoMO38zO', 'admin@ecs.com', 'System Administrator', 'admin', NULL),
@@ -121,4 +121,12 @@ INSERT INTO users (username, password_hash, email, full_name, role, employee_id)
 ('staff6', '$2a$12$iVqh1cdc411By41qWhj5SeIv9kavowtQPAJdwvSbSukmKpoMO38zO', 'mai.hoang@ecs.com', 'Hoang Mai', 'staff', 6),
 ('staff7', '$2a$12$iVqh1cdc411By41qWhj5SeIv9kavowtQPAJdwvSbSukmKpoMO38zO', 'tuan.dang@ecs.com', 'Dang Tuan', 'staff', 7),
 ('staff8', '$2a$12$iVqh1cdc411By41qWhj5SeIv9kavowtQPAJdwvSbSukmKpoMO38zO', 'hoa.bui@ecs.com', 'Bui Hoa', 'staff', 8);
+
+-- ============================================================
+-- 10. AI_ANALYSES (Dữ liệu mẫu phân tích AI)
+-- ============================================================
+INSERT INTO ai_analyses (call_id, sentiment_positive, sentiment_neutral, sentiment_negative, customer_tone_tags, closing_probability, buy_potential, score_greeting, score_listening, score_consulting, score_closing_skill, overall_score, transcript, summary, recommendations) VALUES
+(1, 65, 25, 10, '["Cởi mở", "Hào hứng", "Quan tâm sản phẩm"]', 85, 'Cao', 9, 9, 8, 8, 88, 'Nhân viên: Chào anh Park, em hỗ trợ kỹ thuật Galaxy S24 đây ạ.\nKhách hàng: Anh bị lỗi màn hình chờ.\nNhân viên: Dạ anh vào Cài đặt -> Màn hình để reset lại giúp em nhé.', 'Hỗ trợ reset màn hình Galaxy S24 thành công, khách hàng rất hài lòng.', '["Cần phản hồi nhanh hơn trong 30 giây đầu", "Khai thác thêm nhu cầu mua phụ kiện"]'),
+(2, 50, 40, 10, '["Lịch sự", "Đang cân nhắc giá"]', 60, 'Trung bình', 8, 8, 7, 7, 78, 'Nhân viên: Em chào anh ạ, em gọi từ bộ phận TV QLED.\nKhách hàng: Tivi 65 inch giá bao nhiêu vậy em?', 'Khách hàng hỏi giá Smart TV 4K QLED 65 inch.', '["Gửi báo giá qua Zalo/Email cho khách hàng", "Nhắc chương trình khuyến mãi tháng này"]');
+
 

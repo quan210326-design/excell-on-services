@@ -180,6 +180,32 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- ============================================================
+-- 10. AI_ANALYSES TABLE
+-- Lưu kết quả phân tích AI cho từng cuộc gọi (Sentiment, Điểm số kỹ năng, Transcript & Khuyến nghị)
+-- ============================================================
+CREATE TABLE IF NOT EXISTS ai_analyses (
+    id                      INT AUTO_INCREMENT PRIMARY KEY,
+    call_id                 INT NOT NULL UNIQUE,             -- FK cuộc gọi
+    sentiment_positive      INT DEFAULT 0,                   -- % Phấn khởi / Tích cực
+    sentiment_neutral       INT DEFAULT 0,                   -- % Trung tính
+    sentiment_negative      INT DEFAULT 0,                   -- % Tiêu cực / Thất vọng
+    customer_tone_tags      JSON,                            -- Tag cảm xúc (vd: ["Cởi mở", "Hào hứng"])
+    closing_probability     INT DEFAULT 0,                   -- % Khả năng chốt hợp đồng
+    buy_potential           ENUM('Cao', 'Trung bình', 'Thấp') DEFAULT 'Trung bình',
+    score_greeting          INT DEFAULT 8,                   -- Lời chào & thái độ (/10)
+    score_listening         INT DEFAULT 8,                   -- Lắng nghe & nắm bắt nhu cầu (/10)
+    score_consulting        INT DEFAULT 7,                   -- Tư vấn giải pháp (/10)
+    score_closing_skill     INT DEFAULT 7,                   -- Kỹ năng chốt hợp đồng (/10)
+    overall_score           INT DEFAULT 75,                  -- Điểm tổng kết dịch vụ (/100)
+    transcript              TEXT,                            -- Văn bản ghi âm cuộc gọi
+    summary                 TEXT,                            -- Tóm tắt cuộc gọi
+    recommendations         JSON,                            -- Khuyến nghị cải thiện
+    created_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at              TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (call_id) REFERENCES call_logs(id) ON DELETE CASCADE
+);
+
+-- ============================================================
 -- INDEXES để tăng hiệu suất tìm kiếm
 -- ============================================================
 CREATE INDEX idx_employees_dept ON employees(dept_id);
@@ -193,3 +219,5 @@ CREATE INDEX idx_payments_due_date ON payments(due_date);
 CREATE INDEX idx_call_logs_client ON call_logs(client_id);
 CREATE INDEX idx_call_logs_employee ON call_logs(employee_id);
 CREATE INDEX idx_call_logs_datetime ON call_logs(call_datetime);
+CREATE INDEX idx_ai_analyses_call ON ai_analyses(call_id);
+
