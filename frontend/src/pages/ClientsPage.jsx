@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { clientsApi } from '../api';
 import Modal from '../components/Modal';
 import { Badge, Loading, ConfirmModal } from '../components/UI';
-import { Search, Plus, Edit2, Trash2, Eye, Phone } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Eye, Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useCall } from '../context/CallContext';
+import VirtualCallModal from '../components/VirtualCallModal';
+import CallAIDetailModal from '../components/CallAIDetailModal';
 
 const EMPTY_FORM = {
   client_code: '', company_name: '', contact_person: '', email: '',
@@ -16,7 +17,6 @@ const EMPTY_FORM = {
 export default function ClientsPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { startCall } = useCall();
   const isStaff = user?.role === 'staff';
 
   const [clients, setClients] = useState([]);
@@ -29,6 +29,10 @@ export default function ClientsPage() {
   const [confirmId, setConfirmId] = useState(null);
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
+
+  // Virtual Call AI Modal States
+  const [aiCallClient, setAiCallClient] = useState(null);
+  const [selectedAICallId, setSelectedAICallId] = useState(null);
 
   const fetchClients = async () => {
     setLoading(true);
@@ -73,10 +77,18 @@ export default function ClientsPage() {
     } catch { toast.error('Không thể xóa'); }
   };
 
+  const handleStartAICall = (c) => {
+    setAiCallClient(c);
+  };
+
+  const handleAICallCompleted = (callId) => {
+    setSelectedAICallId(callId);
+  };
+
   return (
     <div>
       <div className="page-header">
-        <div><h2>🏢 Khách Hàng</h2><p>Quản lý thông tin khách hàng của ECS</p></div>
+        <div><h2>🏢 Khách Hàng</h2><p>Quản lý thông tin & Thực hiện cuộc gọi AI phân tích giọng điệu chốt đơn</p></div>
         {!isStaff && (
           <button id="add-client-btn" className="btn btn-primary" onClick={openAdd}>
             <Plus size={16} /> Thêm Khách Hàng
@@ -112,20 +124,17 @@ export default function ClientsPage() {
             <thead>
               <tr>
                 <th>Mã KH</th><th>Tên Công Ty</th><th>Người Liên Hệ</th>
-                <th>Email</th><th>Thành Phố</th><th>Ngành</th>
-                <th>Dịch Vụ</th><th>Trạng Thái</th><th>Hành Động</th>
+                <th>Ngành</th><th>Dịch Vụ</th><th>Trạng Thái</th><th>Hành Động</th>
               </tr>
             </thead>
             <tbody>
               {clients.length === 0 ? (
-                <tr><td colSpan={9} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>Không có dữ liệu</td></tr>
+                <tr><td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-muted)' }}>Không có dữ liệu</td></tr>
               ) : clients.map(c => (
                 <tr key={c.id}>
                   <td><strong>{c.client_code}</strong></td>
                   <td><strong>{c.company_name}</strong></td>
                   <td>{c.contact_person}</td>
-                  <td style={{ fontSize: '12px' }}>{c.email}</td>
-                  <td>{c.city || '-'}</td>
                   <td>{c.industry || '-'}</td>
                   <td>
                     {c.clientServices?.length > 0
@@ -136,12 +145,18 @@ export default function ClientsPage() {
                   </td>
                   <td><Badge status={c.status} /></td>
                   <td>
-                    <div className="action-btns">
-                      {c.phone && (
-                        <button id={`call-client-${c.id}`} className="btn btn-sm btn-success" onClick={() => startCall(c)} title="Gọi ảo">
-                          <Phone size={13} />
-                        </button>
-                      )}
+                    <div className="action-btns" style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                      {/* Integrated AI Call Button directly on Client Row */}
+                      <button 
+                        id={`ai-call-client-${c.id}`} 
+                        className="btn btn-sm btn-primary btn-ai-call" 
+                        style={{ padding: '4px 10px', fontSize: '11px', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                        onClick={() => handleStartAICall(c)} 
+                        title="Gọi Điện AI Phân Tích Chốt Đơn"
+                      >
+                        <Sparkles size={13} /> Gọi AI
+                      </button>
+
                       <button id={`view-client-${c.id}`} className="btn btn-sm btn-secondary" onClick={() => navigate(`/clients/${c.id}`)} title="Xem Chi Tiết">
                         <Eye size={13} />
                       </button>
@@ -234,6 +249,22 @@ export default function ClientsPage() {
 
       <ConfirmModal isOpen={!!confirmId} onClose={() => setConfirmId(null)}
         onConfirm={handleDelete} message="Bạn có chắc muốn xóa khách hàng này không? Tất cả dữ liệu liên quan sẽ bị xóa." />
+
+      {/* AI Virtual Call Modal integrated directly for selected Client */}
+      {aiCallClient && (
+        <VirtualCallModal
+          isOpen={!!aiCallClient}
+          onClose={() => setAiCallClient(null)}
+          onCallCompleted={handleAICallCompleted}
+          initialClient={aiCallClient}
+        />
+      )}
+
+      {/* AI Analysis Detail Report Modal */}
+      <CallAIDetailModal
+        callId={selectedAICallId}
+        onClose={() => setSelectedAICallId(null)}
+      />
     </div>
   );
 }

@@ -1,49 +1,27 @@
-require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const { sequelize, testConnection } = require('./src/config/database');
-require('./src/models'); // Khởi tạo models và associations
+const path = require('path');
+const fs = require('fs');
+require('dotenv').config();
+
+const { testConnection } = require('./src/config/database');
 
 const app = express();
 
-// ── Security Middleware ────────────────────────────
-app.use(helmet());
+// ── Middlewares ────────────────────────────────────
 app.use(cors({
-  origin: (origin, callback) => {
-    // Cho phép: Twilio webhooks (không có origin), localhost variants, ngrok
-    if (!origin
-      || origin.includes('localhost')
-      || origin.includes('127.0.0.1')
-      || origin.includes('[::1]')
-      || origin.includes('.ngrok')
-    ) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true,
   credentials: true
 }));
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Middleware chuẩn hóa chuỗi rỗng thành null trước khi lưu vào DB
-app.use((req, res, next) => {
-  if (req.body && typeof req.body === 'object') {
-    for (const key in req.body) {
-      if (req.body[key] === '') {
-        req.body[key] = null;
-      }
-    }
-  }
-  next();
-});
-
-// Rate limiting (Tăng giới hạn max để tránh lỗi 429 khi tự động sync Call Logs hoặc gọi WebRTC nhiều tab)
-const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 3000 });
-app.use('/api/', limiter);
+// Static serve uploads folder
+const publicUploads = path.join(__dirname, 'public/uploads');
+if (!fs.existsSync(publicUploads)) {
+  fs.mkdirSync(publicUploads, { recursive: true });
+}
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
 
 // ── Routes ─────────────────────────────────────────
 app.use('/api/auth', require('./src/routes/auth'));
@@ -75,6 +53,13 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 const startServer = async () => {
   await testConnection();
+  try {
+    const { AIAnalysis } = require('./src/models');
+    await AIAnalysis.sync({ alter: true });
+    console.log('✅ Bảng ai_analyses đã được đồng bộ hóa thành công');
+  } catch (syncErr) {
+    console.warn('⚠️ Lỗi sync bảng ai_analyses:', syncErr.message);
+  }
   app.listen(PORT, () => {
     console.log(`🚀 ECS Backend running at http://localhost:${PORT}`);
     console.log(`📖 API base: http://localhost:${PORT}/api`);
@@ -82,4 +67,3 @@ const startServer = async () => {
 };
 
 startServer();
-

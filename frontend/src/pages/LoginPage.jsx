@@ -15,9 +15,9 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      await login(form.username, form.password);
+      const data = await login(form.username, form.password);
       toast.success('Đăng nhập thành công!');
-      navigate('/');
+      navigate(data.user?.role === 'admin' ? '/' : '/clients');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Đăng nhập thất bại');
     } finally {
@@ -125,11 +125,11 @@ export default function LoginPage() {
             disabled={loading}
             style={{ marginTop: '8px', justifyContent: 'center', padding: '12px' }}
           >
-            {loading ? 'Đang đăng nhập...' : '🚀 Đăng Nhập'}
+            {loading ? 'Đang đăng nhập...' : ' Đăng Nhập'}
           </button>
         </form>
 
-        <div style={{
+        {/* <div style={{
           marginTop: '24px', padding: '14px', background: 'rgba(37,99,235,0.08)',
           border: '1px solid rgba(37,99,235,0.2)', borderRadius: '8px'
         }}>
@@ -139,7 +139,7 @@ export default function LoginPage() {
           <p style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
             Admin: <strong>admin</strong> / <strong>Admin@123</strong>
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

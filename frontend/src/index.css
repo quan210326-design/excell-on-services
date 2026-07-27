@@ -1094,4 +1094,344 @@ tbody td strong { color: var(--text-primary); }
   text-align: center;
 }
 
+/* ============================================================
+   AI CALL & CLOSING EVALUATION STYLES
+   ============================================================ */
+
+/* Glowing AI Button */
+.btn-ai-call {
+  background: linear-gradient(135deg, #0284c7 0%, #0284c7 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(56, 189, 248, 0.4) !important;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.35) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  font-weight: 600 !important;
+}
+
+.btn-ai-call:hover {
+  background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%) !important;
+  box-shadow: 0 6px 20px rgba(2, 132, 199, 0.55) !important;
+  transform: translateY(-1px) scale(1.02);
+}
+
+.btn-ai-call:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* AI Pulse Glow Animation */
+@keyframes ai-pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(2, 132, 199, 0.4);
+    border-color: rgba(56, 189, 248, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 30px rgba(56, 189, 248, 0.85);
+    border-color: rgba(56, 189, 248, 0.9);
+  }
+}
+
+.ai-pulse-glow {
+  animation: ai-pulse-glow 2s infinite ease-in-out;
+}
+
+/* Glassmorphism Panel */
+.ai-glass-panel {
+  background: rgba(15, 23, 42, 0.85) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.ai-card-glow {
+  background: rgba(30, 41, 59, 0.7) !important;
+  backdrop-filter: blur(10px) !important;
+  border: 1px solid rgba(56, 189, 248, 0.15) !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* AI Badges */
+.badge-ai-high {
+  background: rgba(16, 185, 129, 0.18) !important;
+  color: #34d399 !important;
+  border: 1px solid rgba(16, 185, 129, 0.4) !important;
+  font-weight: 700 !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.2) !important;
+}
+
+.badge-ai-medium {
+  background: rgba(245, 158, 11, 0.18) !important;
+  color: #fbbf24 !important;
+  border: 1px solid rgba(245, 158, 11, 0.4) !important;
+  font-weight: 700 !important;
+}
+
+.badge-ai-low {
+  background: rgba(244, 63, 94, 0.18) !important;
+  color: #fb7185 !important;
+  border: 1px solid rgba(244, 63, 94, 0.4) !important;
+  font-weight: 700 !important;
+}
+
+/* Waveform Visualizer Canvas Container */
+.ai-waveform-container {
+  background: rgba(10, 15, 30, 0.8);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 12px;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* Transcript Stream Bubbles */
+.ai-transcript-bubble-staff {
+  background: linear-gradient(135deg, rgba(8, 47, 73, 0.9), rgba(12, 74, 110, 0.9));
+  color: #e0f2fe;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15);
+}
+
+.ai-transcript-bubble-client {
+  background: rgba(30, 41, 59, 0.9);
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ============================================================
+   VIRTUAL CALL SIMULATOR (ECS MODAL & CALL CONTROLS)
+   ============================================================ */
+
+.vcall-overlay {
+  background: rgba(8, 12, 22, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.vcall-container {
+  background: #0f172a;
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 30px rgba(2, 132, 199, 0.15);
+}
+
+.vcall-header {
+  background: #090e1a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vcall-header-icon {
+  background: rgba(30, 41, 59, 0.8);
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vcall-header-icon.active {
+  background: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.4);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.3);
+}
+
+.vcall-title {
+  color: #ffffff;
+  letter-spacing: -0.01em;
+}
+
+.vcall-subtitle {
+  color: #94a3b8;
+}
+
+.vcall-close-btn {
+  color: #64748b;
+}
+
+.vcall-close-btn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.vcall-body {
+  background: #0f172a;
+}
+
+.vcall-input-group label {
+  color: #cbd5e1;
+}
+
+.vcall-select, .vcall-input {
+  background: #090e1a !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #ffffff !important;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.vcall-select:focus, .vcall-input:focus {
+  border-color: #0284c7 !important;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.2) !important;
+}
+
+/* Scenario selector cards */
+.vcall-scenario-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  cursor: pointer;
+}
+
+.vcall-scenario-card:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+.vcall-scenario-card.interested.active {
+  background: rgba(6, 78, 59, 0.4);
+  border-color: #10b981;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+}
+
+.vcall-scenario-card.hesitant.active {
+  background: rgba(120, 53, 15, 0.4);
+  border-color: #f59e0b;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+}
+
+.vcall-scenario-card.busy.active {
+  background: rgba(136, 19, 55, 0.4);
+  border-color: #f43f5e;
+  box-shadow: 0 0 15px rgba(244, 63, 94, 0.2);
+}
+
+/* Active Call Cards */
+.vcall-active-card {
+  background: #090e1a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vcall-avatar-outer {
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  box-shadow: 0 0 25px rgba(2, 132, 199, 0.4);
+}
+
+.vcall-timer-clock {
+  background: #0f172a;
+  color: #38bdf8;
+  border-color: rgba(56, 189, 248, 0.3);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.4);
+}
+
+.vcall-waveform-box {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vcall-stream-box {
+  background: rgba(9, 14, 26, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.vcall-bubble.staff {
+  background: linear-gradient(135deg, #082f49, #0c4a6e);
+  color: #e0f2fe;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+}
+
+.vcall-bubble.client {
+  background: #1e293b;
+  color: #f1f5f9;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Loader Spinner */
+.vcall-spinner {
+  border-color: rgba(56, 189, 248, 0.2);
+  border-top-color: #38bdf8;
+}
+
+/* Buttons in Footer */
+.vcall-btn-start {
+  background: linear-gradient(135deg, #10b981 0%, #0d9488 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(16, 185, 129, 0.35);
+  border: 1px solid rgba(52, 211, 153, 0.4);
+}
+
+.vcall-btn-start:hover {
+  background: linear-gradient(135deg, #059669 0%, #0f766e 100%);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5);
+  transform: translateY(-1px);
+}
+
+.vcall-btn-end {
+  background: linear-gradient(135deg, #e11d48 0%, #dc2626 100%);
+  color: #ffffff;
+  box-shadow: 0 4px 16px rgba(225, 29, 72, 0.35);
+  border: 1px solid rgba(251, 113, 133, 0.4);
+}
+
+.vcall-btn-end:hover {
+  background: linear-gradient(135deg, #be123c 0%, #b91c1c 100%);
+  box-shadow: 0 6px 20px rgba(225, 29, 72, 0.5);
+  transform: translateY(-1px);
+}
+
+.vcall-ctrl-btn {
+  background: #1e293b;
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #94a3b8;
+}
+
+.vcall-ctrl-btn:hover {
+  background: #334155;
+  color: #ffffff;
+}
+
+.vcall-ctrl-btn.active-mute {
+  background: rgba(245, 158, 11, 0.2);
+  border-color: #f59e0b;
+  color: #fbbf24;
+}
+
+.vcall-ctrl-btn.active-hold {
+  background: #f59e0b;
+  border-color: #f59e0b;
+  color: #0f172a;
+  font-weight: bold;
+}
+
+/* Floating Slide Up Animation */
+@keyframes animate-slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-slideUp {
+  animation: animate-slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Futuristic Cyberpunk HUD Softphone Custom Styles */
+.vcall-futuristic-card {
+  box-shadow: 0 25px 60px -10px rgba(0, 0, 0, 0.85), 0 0 35px rgba(6, 182, 212, 0.25);
+}
+
+.vcall-header-hud {
+  box-shadow: inset 0 -1px 0 rgba(6, 182, 212, 0.2);
+}
+
+.vcall-hud-clock {
+  text-shadow: 0 0 12px rgba(6, 182, 212, 0.6);
+}
+
+.vcall-minimized-pill {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vcall-minimized-pill:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 0 35px rgba(6, 182, 212, 0.5);
+}
+
+
+
+
+
 

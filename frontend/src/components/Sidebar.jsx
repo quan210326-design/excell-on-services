@@ -8,7 +8,7 @@ import {
 
 const navItems = [
   { section: 'Tổng Quan', items: [
-    { to: '/', label: 'Dashboard', icon: LayoutDashboard, allowedRoles: ['admin', 'manager', 'staff'] },
+    { to: '/', label: 'Dashboard', icon: LayoutDashboard, allowedRoles: ['admin'] },
   ]},
   { section: 'Quản Lý', items: [
     { to: '/services', label: 'Dịch Vụ', icon: Settings, allowedRoles: ['admin', 'manager'] },

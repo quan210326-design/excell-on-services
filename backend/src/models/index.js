@@ -9,6 +9,7 @@ const Payment = require('./Payment');
 const CallLog = require('./CallLog');
 const User = require('./User');
 const ClientProcedure = require('./ClientProcedure');
+const AIAnalysis = require('./AIAnalysis');
 
 // ── Employee relationships ──────────────────────────
 Employee.belongsTo(Department, { foreignKey: 'dept_id', as: 'department' });
@@ -46,12 +47,15 @@ Client.hasMany(CallLog, { foreignKey: 'client_id', as: 'callLogs' });
 CallLog.belongsTo(Employee, { foreignKey: 'employee_id', as: 'employee' });
 Employee.hasMany(CallLog, { foreignKey: 'employee_id', as: 'callLogs' });
 
+// ── AIAnalysis relationships ────────────────────────
+CallLog.hasOne(AIAnalysis, { foreignKey: 'call_id', as: 'aiAnalysis' });
+AIAnalysis.belongsTo(CallLog, { foreignKey: 'call_id', as: 'callLog' });
+
 // ── User relationships ──────────────────────────────
 User.belongsTo(Employee, { foreignKey: 'employee_id', as: 'employee' });
 Employee.hasOne(User, { foreignKey: 'employee_id', as: 'user' });
 
 module.exports = {
   Service, Department, Employee, Client,
-  ClientService, ClientProduct, ClientProcedure, Payment, CallLog, User
+  ClientService, ClientProduct, ClientProcedure, Payment, CallLog, User, AIAnalysis
 };
-
