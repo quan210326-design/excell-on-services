@@ -43,3 +43,8 @@ frontend/dist/
 # OS metadata
 .DS_Store
 Thumbs.db
+
+# Media uploads
+backend/public/uploads/*
+!backend/public/uploads/.gitkeep
+

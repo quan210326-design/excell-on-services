@@ -251,6 +251,96 @@ export default function ClientDetailPage() {
         </div>
       )}
 
+      {/* Tab: Payments */}
+      {activeTab === 'payments' && (
+        <div className="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Số Hóa Đơn</th>
+                <th>Dịch Vụ Liên Quan</th>
+                <th>Số Tiền</th>
+                <th>Hạn Thanh Toán</th>
+                <th>Ngày Trả</th>
+                <th>Phương Thức</th>
+                <th>Trạng Thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              {payments.length === 0 ? (
+                <tr><td colSpan={7} style={{ textAlign: 'center', padding: 20 }}>Chưa có hóa đơn thanh toán nào</td></tr>
+              ) : payments.map(p => (
+                <tr key={p.id}>
+                  <td><strong>{p.invoice_no}</strong></td>
+                  <td>{p.clientService?.service?.name || '-'}</td>
+                  <td>${parseFloat(p.amount || 0).toLocaleString()}</td>
+                  <td>{p.due_date ? new Date(p.due_date).toLocaleDateString('vi-VN') : '-'}</td>
+                  <td>{p.paid_date ? new Date(p.paid_date).toLocaleDateString('vi-VN') : '-'}</td>
+                  <td>{p.payment_method || '-'}</td>
+                  <td><Badge status={p.status} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Tab: Products */}
+      {activeTab === 'products' && (
+        <div className="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Tên Sản Phẩm</th>
+                <th>Danh Mục</th>
+                <th>Giá</th>
+                <th>Mô Tả</th>
+                <th>Trạng Thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              {products.length === 0 ? (
+                <tr><td colSpan={5} style={{ textAlign: 'center', padding: 20 }}>Chưa có sản phẩm nào</td></tr>
+              ) : products.map(pr => (
+                <tr key={pr.id}>
+                  <td><strong>{pr.product_name}</strong></td>
+                  <td>{pr.category || '-'}</td>
+                  <td>{pr.price ? `$${parseFloat(pr.price).toLocaleString()}` : '-'}</td>
+                  <td style={{ maxWidth: '300px', fontSize: '12px' }}>{pr.description || '-'}</td>
+                  <td><Badge status={pr.is_active ? 'active' : 'inactive'} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Tab: Procedures */}
+      {activeTab === 'procedures' && (
+        <div className="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Tên Quy Trình</th>
+                <th>Chi Tiết Các Bước Xử Lý</th>
+                <th>Trạng Thái</th>
+              </tr>
+            </thead>
+            <tbody>
+              {procedures.length === 0 ? (
+                <tr><td colSpan={3} style={{ textAlign: 'center', padding: 20 }}>Chưa có quy trình nào</td></tr>
+              ) : procedures.map(proc => (
+                <tr key={proc.id}>
+                  <td><strong>{proc.title}</strong></td>
+                  <td style={{ maxWidth: '450px', fontSize: '12px', whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>{proc.steps || '-'}</td>
+                  <td><Badge status={proc.is_active ? 'active' : 'inactive'} /></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
       {/* Tab: Call Logs & AI Reports */}
       {activeTab === 'calllogs' && (
         <div className="table-container">

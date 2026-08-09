@@ -1,87 +1,60 @@
-# ⚡ Excell-On Services (ECS) - Hệ Thống Quản Lý Dịch Vụ Khách Hàng
+# ⚡ Excell-On Services (ECS) - Hệ Thống Quản Lý Dịch Vụ Khách Hàng & Phân Tích Cuộc Gọi AI
 
-Dự án Hệ thống Quản lý Dịch vụ Khách hàng (ECS Consulting Management Portal) là giải pháp Web App toàn diện giúp quản lý các phòng ban, nhân sự phụ trách dịch vụ, thông tin khách hàng, đăng ký dịch vụ, sản phẩm khách hàng, tính toán hóa đơn và quản lý cuộc gọi/nhật ký làm việc.
+Dự án **Hệ thống Quản lý Dịch vụ Khách hàng (ECS Consulting Management Portal)** là giải pháp Web App toàn diện giúp quản lý các phòng ban, nhân sự phụ trách dịch vụ, thông tin khách hàng, đăng ký dịch vụ/sản phẩm, tính toán hóa đơn, tích hợp tổng đài gọi điện thật (Twilio Voice) / cuộc gọi ảo (Virtual Call Recorder) và **Engine AI tự động phân tích cảm xúc khách hàng & đánh giá chất lượng nhân viên**.
 
 ---
 
 ## 🛠️ Công Nghệ Sử Dụng (Tech Stack)
-- **Frontend**: React (Vite), TailwindCSS/Vanilla CSS, Lucide Icons, Recharts (Biểu đồ), Axios, @twilio/voice-sdk.
-- **Backend**: Node.js, Express.js, JWT (Xác thực bảo mật), ExcelJS (Xuất báo cáo Excel), Puppeteer-core (Xuất báo cáo PDF), Twilio (Gọi điện thoại thật).
+
+- **Frontend**: React 19 (Vite), TailwindCSS / Glassmorphism UI, Lucide Icons, Recharts (Biểu đồ), Axios, `@twilio/voice-sdk`, Web Speech API (Chuyển giọng nói thành văn bản).
+- **Backend**: Node.js, Express.js, Sequelize ORM, JWT Authentication, ExcelJS (Xuất báo cáo Excel), Puppeteer-core (Xuất báo cáo PDF), Twilio Voice SDK, Multer.
+- **AI Engine (Built-in)**: Thuật toán xử lý ngôn ngữ tự nhiên (NLP) phân tích cảm xúc (Sentiment Analysis), đánh giá tiêu chí kỹ năng nhân viên, ước tính xác suất chốt hợp đồng và đề xuất khuyến nghị hành động tự động.
 - **Database**: MySQL 8.0 với Sequelize ORM.
 - **Containerization**: Docker & Docker Compose.
-- **Telephony**: Twilio Voice SDK — gọi đi/nhận cuộc gọi đến trực tiếp trên trình duyệt, tự động tạo CallLog.
 
 ---
 
-## 📞 Tính Năng Gọi Điện (Twilio Voice)
+## 🤖 1. Phân Tích & Chấm Điểm Cuộc Gọi Bằng AI (AI Analysis Engine)
 
-### Tổng Quan
-Nhân viên có thể **gọi ra số điện thoại thật** và **nhận cuộc gọi đến** ngay trên trình duyệt — không cần phần mềm điện thoại riêng. Mỗi cuộc gọi kết thúc sẽ **tự động tạo CallLog** với thời lượng thực tế.
+Ngay sau khi cuộc gọi kết thúc (hoặc sau khi tải cuộc gọi ảo lên), hệ thống AI tự động xử lý và trích xuất các chỉ số chuyên sâu:
 
-### Thông Tin Twilio (đã cấu hình)
-| Tham số | Giá trị |
-|---|---|
-| Account SID | `YOUR_TWILIO_ACCOUNT_SID` |
-| Phone Number | `+18573926288` |
-| TwiML App SID | `YOUR_TWILIO_TWIML_APP_SID` |
-| API Key | `YOUR_TWILIO_API_KEY` |
+1. **Phân Tích Cảm Xúc (Sentiment Analysis)**: Tỷ lệ % Tích cực (Positive), Trung tính (Neutral), Tiêu cực (Negative).
+2. **Gán Nhãn Thái Độ Khách Hàng (Customer Tone Tags)**: Nhận diện thái độ tự động (*"Cởi mở"*, *"Hợp tác"*, *"Băn khoăn giá"*, *"Từ chối"*, v.v.).
+3. **Dự Đoán Tiềm Năng Chốt Đơn (Closing Probability %)**: Tính toán tỉ lệ % chốt hợp đồng (10% - 95%) và cấp độ tiềm năng (*Cao*, *Trung bình*, *Thấp*).
+4. **Bảng Điểm Kỹ Năng Nhân Viên (Quality Score Card /100)**:
+   - **Chào hỏi (Greeting Score)** (/10)
+   - **Lắng nghe & Thấu hiểu (Listening Score)** (/10)
+   - **Tư vấn giải pháp (Consulting Score)** (/10)
+   - **Kỹ năng Chốt sales (Closing Skill Score)** (/10)
+   - **Điểm Tổng Thể (Overall Score)** quy đổi ra thang điểm 100.
+5. **Tóm Tắt AI & Đề Xuất Hành Động (AI Summary & Recommendations)**: Tóm tắt nội dung hội thoại và gợi ý các bước xử lý tiếp theo cho nhân viên (VD: *"Gửi báo giá trong 2h"*, *"Lên lịch gọi lại sau 24-48h"*).
 
-> ⚠️ **Bảo mật:** Auth Token và API Secret lưu trong `backend/.env`, **không commit lên GitHub**.
+---
 
-### Biến Môi Trường Twilio (trong `backend/.env`)
-```env
-TWILIO_ACCOUNT_SID=YOUR_TWILIO_ACCOUNT_SID
-TWILIO_AUTH_TOKEN=YOUR_TWILIO_AUTH_TOKEN
-TWILIO_PHONE_NUMBER=+18573926288
-TWILIO_TWIML_APP_SID=YOUR_TWILIO_TWIML_APP_SID
-TWILIO_API_KEY=YOUR_TWILIO_API_KEY
-TWILIO_API_SECRET=YOUR_TWILIO_API_SECRET
-```
+## 📞 2. Tính Năng Cuộc Gọi (Twilio Voice & Virtual Call Recorder)
 
-### Cài Đặt Để Chạy Twilio (Development)
+### A. Gọi Điện Thật Qua Trình Duyệt (Twilio Voice)
+Nhân viên có thể **gọi ra số điện thoại thật** và **nhận cuộc gọi đến** ngay trên trình duyệt mà không cần cài phần mềm riêng.
+- **Access Token API**: `/api/twilio/token`
+- **Webhooks Backend**: `/api/twilio/voice`, `/api/twilio/incoming`, `/api/twilio/status`
+- **Status Callback**: Tự động tạo `CallLog` và lưu thời lượng thực tế khi cuộc gọi kết thúc.
 
-Twilio cần URL công khai để gửi webhook về backend. Dùng **localtunnel** (đã cài sẵn):
-
-**Terminal riêng — chạy trước khi khởi động backend:**
+#### Chạy localtunnel cho Twilio Webhook (Development):
 ```bash
 lt --port 5000 --subdomain ecs-backend-twilio
 # → URL: https://ecs-backend-twilio.loca.lt
 ```
 
-> 💡 Giữ terminal này chạy suốt phiên làm việc. Mỗi lần mở lại máy phải chạy lại lệnh này.
-
-### Cấu Hình Twilio Console (đã thiết lập — chỉ cần cập nhật nếu đổi URL)
-
-**TwiML App** → [console.twilio.com > Voice > TwiML Apps](https://console.twilio.com/us1/develop/voice/twiml/apps) > `ECS Voice App`:
-- Voice Request URL: `https://ecs-backend-twilio.loca.lt/api/twilio/voice`
-
-**Phone Number** → [console.twilio.com > Phone Numbers](https://console.twilio.com/us1/develop/phone-numbers/manage/incoming) > `+18573926288` > Configure:
-- A Call Comes In: `https://ecs-backend-twilio.loca.lt/api/twilio/incoming`
-- Call Status Changes: `https://ecs-backend-twilio.loca.lt/api/twilio/status`
-
-### Các Webhook Endpoint Backend
-| Endpoint | Method | Mô tả |
-|---|---|---|
-| `/api/twilio/token` | GET | Tạo Access Token cho browser SDK (cần JWT) |
-| `/api/twilio/voice` | POST | TwiML cho cuộc gọi ra (Twilio gọi vào) |
-| `/api/twilio/incoming` | POST | TwiML cho cuộc gọi đến từ ngoài |
-| `/api/twilio/status` | POST | StatusCallback — tự tạo CallLog khi call kết thúc |
-| `/api/twilio/log` | POST | Fallback tạo CallLog từ frontend (cần JWT) |
-
-### Cách Test Tính Năng
-1. Chạy `lt --port 5000 --subdomain ecs-backend-twilio` (terminal riêng)
-2. Chạy backend: `cd backend && npm run dev`
-3. Chạy frontend: `cd frontend && npm run dev`
-4. Đăng nhập → thấy widget **"Sẵn sàng nhận cuộc gọi"** góc phải màn hình (chấm xanh)
-5. **Test gọi ra:** Bấm "Gọi Ra" → nhập số → gọi → số điện thoại đích sẽ reo
-6. **Test nhận cuộc gọi:** Gọi từ điện thoại vào số `+18573926288` → widget reo → bấm Nghe
-7. Sau cuộc gọi → popup điền kết quả → CallLog tự động xuất hiện trong danh sách
-
-
+### B. Cuộc Gọi Ảo & Thu Âm Trực Tiếp (Virtual Call Recorder)
+Dành cho việc test trực tiếp qua micro hoặc ghi âm cuộc gọi tư vấn:
+- **Speech-to-Text**: Nhận diện giọng nói tiếng Việt trực tiếp qua `Web Speech API`.
+- **Audio Recording**: Thu âm định dạng WAV/WebM với `MediaRecorder`.
+- Tự động đẩy lên API `/api/call-logs/upload-virtual` để AI phân tích tức thì.
 
 ---
 
 ## 🔐 Tài Khoản Đăng Nhập Mẫu (Mật khẩu mặc định: `Admin@123`)
+
 | Tài Khoản | Mật Khẩu | Vai Trò (Role) | Nhân Viên Liên Kết |
 |---|---|---|---|
 | `admin` | `Admin@123` | **Admin** | Quản trị viên hệ thống |
@@ -100,7 +73,7 @@ lt --port 5000 --subdomain ecs-backend-twilio
 ## 📥 Bước 1: Clone mã nguồn dự án
 
 ```bash
-git clone https://github.com/TuyenLe27/ECS.git
+git clone https://github.com/quan210326-design/excell-on-services.git 
 cd ECS
 ```
 
@@ -120,44 +93,36 @@ docker compose up -d --build
 ```
 
 Sau khi Docker khởi chạy xong:
-- **Frontend App**: http://localhost:3000
+- **Frontend App**: http://localhost:5173 (hoặc port được map trong docker-compose)
 - **Backend API**: http://localhost:5000
-- **MySQL**: port `3307` (tránh xung đột với MySQL local)
-
-> 💡 **Lần sau:** Chỉ cần mở **Docker Desktop** → nhấn nút **Play ▶** vào nhóm container `esc` là xong, không cần gõ lệnh lại.
+- **MySQL**: port `3306` hoặc `3307`
 
 ---
 
 ### 💻 Cách 2: Chạy Local (Để Code & Phát Triển)
 
-> Phù hợp khi muốn **sửa code** và thấy kết quả thay đổi ngay lập tức (Hot Reload).
-
 **Yêu cầu:**
 - [Node.js](https://nodejs.org) >= v18.0
-- MySQL Server >= 8.0 **hoặc** Docker Desktop (để chạy riêng MySQL)
+- MySQL Server >= 8.0
 
-#### Bước 1: Tạo Database
+#### Bước 1: Khởi Tạo Database & Khởi Tạo Dữ Liệu Mẫu
 
-**Option A – Dùng Docker chỉ cho MySQL (tiện nhất, không cần cài MySQL):**
+**Cách A – Khởi tạo qua MySQL Command / Client:**
 ```bash
-# Chạy lệnh này từ thư mục gốc của dự án
-docker run -d --name ecs_mysql_local ^
-  -e MYSQL_ROOT_PASSWORD=YOUR_MYSQL_PASSWORD ^
-  -e MYSQL_DATABASE=ecs_db ^
-  -p 3306:3306 ^
-  -v "%cd%/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql" ^
-  -v "%cd%/database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql" ^
-  mysql:8.0
+mysql -u root -p12345678 -e "CREATE DATABASE IF NOT EXISTS ecs_db;"
+mysql -u root -p12345678 ecs_db < database/schema.sql
+mysql -u root -p12345678 ecs_db < database/seed.sql
 ```
-*(Mac/Linux thay `^` bằng `\` và `%cd%` bằng `$(pwd)`)*
 
-**Option B – Dùng MySQL đã cài sẵn trên máy:**
+**Cách B – Dùng Scripts có sẵn trong Backend:**
 ```bash
-mysql -u YOUR_USER -pYOUR_PASSWORD -e "CREATE DATABASE IF NOT EXISTS ecs_db;"
-mysql -u YOUR_USER -pYOUR_PASSWORD ecs_db < database/schema.sql
-mysql -u YOUR_USER -pYOUR_PASSWORD ecs_db < database/seed.sql
+cd backend
+npm install
+npm run db:migrate
+npm run db:seed
+# Hoặc chạy script reseed dữ liệu đầy đủ:
+node reseed.js
 ```
-*(Thay `YOUR_USER` và `YOUR_PASSWORD` bằng thông tin MySQL thực tế của bạn)*
 
 #### Bước 2: Cấu hình Backend
 ```bash
@@ -168,16 +133,16 @@ copy .env.example .env   # Windows
 npm install
 ```
 
-Mở file `backend/.env`, kiểm tra thông tin:
+File `backend/.env`:
 ```env
 PORT=5000
 NODE_ENV=development
 DB_HOST=localhost
 DB_PORT=3306
 DB_NAME=ecs_db
-DB_USER=YOUR_MYSQL_USER
+DB_USER=root
 DB_PASSWORD=YOUR_MYSQL_PASSWORD
-JWT_SECRET=YOUR_JWT_SECRET_KEY
+JWT_SECRET=supersecretkey12345!
 JWT_EXPIRES_IN=24h
 FRONTEND_URL=http://localhost:5173
 ```
@@ -191,7 +156,7 @@ copy .env.example .env   # Windows
 npm install
 ```
 
-File `frontend/.env` nên có:
+File `frontend/.env`:
 ```env
 VITE_API_URL=http://localhost:5000/api
 ```
@@ -216,14 +181,11 @@ npm run dev
 
 ### 🌐 Cách 3: Chạy Từ Docker Hub (Không cần tải mã nguồn)
 
-> Phù hợp khi chỉ muốn **chạy thử app** mà không cần clone code.
-
-1. Tải duy nhất file `docker-compose-hub.yml` và thư mục `database/` về máy mới.
+1. Tải duy nhất file `docker-compose-hub.yml` và thư mục `database/` về máy.
 2. Chạy lệnh:
 ```bash
 docker compose -f docker-compose-hub.yml up -d
 ```
-*Hệ thống tự động kéo images từ Docker Hub (`YOUR_DOCKERHUB_USERNAME/ecs-backend` và `YOUR_DOCKERHUB_USERNAME/ecs-frontend`) về và chạy luôn.*
 
 ---
 
@@ -234,120 +196,35 @@ docker compose -f docker-compose-hub.yml up -d
 
 ---
 
-## 🔄 Quy Trình Làm Việc Nhóm / Nhiều Máy
-
-### 1️⃣ Khi kết thúc phiên code → Push lên GitHub
-
-```bash
-# Xem những file nào đã thay đổi
-git status
-
-# Thêm tất cả thay đổi vào staging
-git add .
-
-# Commit với nội dung mô tả rõ ràng
-git commit -m "feat: mô tả tính năng bạn vừa làm"
-
-# Push lên GitHub
-git push origin main
-```
-
-> ⚠️ **Quan trọng:** Nếu bạn **thêm/sửa dữ liệu qua giao diện** (thêm client, employee...), hãy cập nhật file `database/seed.sql` rồi commit kèm theo để máy khác có dữ liệu mới nhất.
-
----
-
-### 2️⃣ Khi bắt đầu code ở máy khác → Pull code mới về
-
-```bash
-# Cập nhật code mới nhất từ GitHub về máy
-git pull origin main
-```
-
-> Nếu có conflict (xung đột code), Git sẽ báo và bạn cần giải quyết thủ công trước khi tiếp tục.
-
----
-
-### 3️⃣ Sau khi thay đổi code → Build & Push lên Docker Hub
-
-> Thực hiện bước này khi muốn **cập nhật Docker images** để người khác có thể dùng Cách 3 (Docker Hub) với code mới nhất.
-
-#### a. Đăng nhập Docker Hub (chỉ cần làm 1 lần)
-```bash
-docker login
-# Nhập Docker Hub username và password của bạn
-```
-
-#### b. Build images mới từ code hiện tại
-```bash
-# Build backend image
-docker build -t YOUR_DOCKERHUB_USERNAME/ecs-backend:latest ./backend
-
-# Build frontend image
-docker build -t YOUR_DOCKERHUB_USERNAME/ecs-frontend:latest ./frontend
-```
-
-#### c. Push images lên Docker Hub
-```bash
-docker push YOUR_DOCKERHUB_USERNAME/ecs-backend:latest
-docker push YOUR_DOCKERHUB_USERNAME/ecs-frontend:latest
-```
-
-#### d. Khởi động lại hệ thống với code mới
-```bash
-docker compose down
-docker compose up -d --build
-```
-
----
-
-### ✅ Tóm Tắt Quy Trình Hoàn Chỉnh Sau Mỗi Lần Code Xong
-
-```bash
-# 1. Commit và push code lên GitHub
-git add .
-git commit -m "feat: mô tả thay đổi"
-git push origin main
-
-# 2. Build và push Docker images lên Docker Hub
-docker build -t YOUR_DOCKERHUB_USERNAME/ecs-backend:latest ./backend
-docker build -t YOUR_DOCKERHUB_USERNAME/ecs-frontend:latest ./frontend
-docker push YOUR_DOCKERHUB_USERNAME/ecs-backend:latest
-docker push YOUR_DOCKERHUB_USERNAME/ecs-frontend:latest
-
-# 3. Restart lại hệ thống (nếu đang dùng Docker)
-docker compose down
-docker compose up -d --build
-```
-
----
-
 ## 🗂️ Cấu Trúc Thư Mục Dự Án
 
 ```
 ECS/
-├── backend/                # Node.js + Express API
+├── backend/                # Node.js + Express API & AI Engine
 │   ├── src/
-│   │   ├── controllers/    # Xử lý logic nghiệp vụ
-│   │   ├── models/         # Sequelize ORM models
+│   │   ├── controllers/    # Xử lý logic nghiệp vụ & AI Analytics
+│   │   ├── models/         # Sequelize ORM models (CallLog, AIAnalysis, Client...)
 │   │   ├── routes/         # Định nghĩa API routes
-│   │   └── middleware/     # Auth, validation middleware
-│   ├── server.js           # Entry point
+│   │   ├── services/       # AI Processing Service & PDF Service
+│   │   └── config/         # Sequelize Migration & Seeder
+│   ├── reseed.js           # Script làm mới dữ liệu & mẫu AI cuộc gọi
+│   ├── server.js           # Server Entry point
 │   ├── .env.example        # Template biến môi trường
 │   └── Dockerfile
 │
-├── frontend/               # React + Vite
+├── frontend/               # React + Vite Application
 │   ├── src/
-│   │   ├── components/     # Reusable UI components
-│   │   ├── pages/          # Các trang chính
-│   │   ├── services/       # Axios API calls
-│   │   └── context/        # React Context (Auth...)
+│   │   ├── components/     # UI Components (CallWidget, VirtualCallWidget, CallAIDetailModal...)
+│   │   ├── pages/          # Các trang chính (Dashboard, CallLogs, Clients, Employees...)
+│   │   ├── api/            # Axios API Services
+│   │   └── context/        # React Context (AuthContext...)
 │   ├── .env.example        # Template biến môi trường
 │   └── Dockerfile
 │
 ├── database/
-│   ├── schema.sql          # Cấu trúc bảng (DDL)
-│   └── seed.sql            # Dữ liệu mẫu (DML)
+│   ├── schema.sql          # Cấu trúc bảng MySQL (DDL)
+│   └── seed.sql            # Dữ liệu mẫu ban đầu (DML)
 │
-├── docker-compose.yml      # Chạy local bằng Docker (build từ source)
+├── docker-compose.yml      # Chạy local bằng Docker
 └── docker-compose-hub.yml  # Chạy từ Docker Hub images
 ```
